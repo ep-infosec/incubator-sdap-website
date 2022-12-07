@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Apache SDAP - Science Data Analytics Platform</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.0/gh-fork-ribbon.min.css" />
+    <!--[if lt IE 9]>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.0/gh-fork-ribbon.ie.min.css" />
+    <![endif]--> 
+  </head>
+  <body>
+    <a class="github-fork-ribbon" href="https://github.com/apache?utf8=✓&q=incubator-sdap&type=&language=" title="Fork me on GitHub" target="_blank" >Fork me on GitHub</a> 
+    <div class="container">
+
+      <div class="logos">
+        <a href="https://incubator.apache.org">
+          <img src="/images/egg-logo.png" class="pull-left" />
+        </a>
+      </div>
+
+      <!-- navigation bar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/">SDAP</a>
+          </div>
+          <div class="navbar-right">
+            <ul class="nav navbar-nav">
+              <li><a href="/docs">Docs</a></li>
+              <li><a href="/blog">Blog</a></li>
+              <li><a href="/team">Team &amp; Community</a></li>
+              <li><a href="/resources">Resources</a></li>
+              <li class="dropdown toggle">
+              	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Apache <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://www.apache.org/foundation/how-it-works.html">Apache Software Foundation</a></li>
+                  <li><a href="http://www.apache.org/licenses/">Apache License</a></li>
+                  <li><a href="http://www.apache.org/foundation/sponsorship">Sponsorship</a></li>
+                  <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+
+<h1>An introduction to MUDROD ranking algorithm</h1>
+
+<p>Posted <b>2018-04-23</b> by <b>Lewis John McGibbney</b></p>
+
+<p>When a user types some keywords into a search engine, there are typically hundreds, or even thousands of datasets related to the given query. Although high level of recall can be useful in some cases, the user is only interested in a much smaller subset. Current search engines in most geospatial data portals tend to induce end users to focus on one single data characteristic/feature dimension (e.g., spatial resolution), which often results in less than optimal user experience (Ghose, Ipeirotis, and Li 2012).</p>
+
+<p>To overcome this fundamental ranking problem, we therefore 1) identify a number of ranking features of geospatial data to represent users’ multidimensional preferences by considering semantics, user behaviour, spatial similarity, and static dataset metadata attributes; 2) apply machine learning method to automatically learn a function from a training set capable of ranking geospatial data according to the ranking features.</p>
+
+<p>Within the ranking process, each query will be associated with a set of data, and each data can be represented as a feature vector. Eleven features listed below are identified by considering user behaviour, query-text match and  examining common geospatial metadata attributes.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Query-dependent features</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Lucene relevance score</td>
+    </tr>
+    <tr>
+      <td>Semantic popularity</td>
+    </tr>
+    <tr>
+      <td>Spatial Similarity</td>
+    </tr>
+    <tr>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Query-dependent features</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Release date</td>
+    </tr>
+    <tr>
+      <td>Processing level</td>
+    </tr>
+    <tr>
+      <td>Version number</td>
+    </tr>
+    <tr>
+      <td>Spatial resolution</td>
+    </tr>
+    <tr>
+      <td>Temporal resolution</td>
+    </tr>
+    <tr>
+      <td>All-time popularity</td>
+    </tr>
+    <tr>
+      <td>Monthly popularity</td>
+    </tr>
+    <tr>
+      <td>User popularity</td>
+    </tr>
+    <tr>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>RankSVM, one of the well-recognized learning approach is selected to learn feature weights to rank search results. In RankSVM (Joachims 2002), ranking is transformed into a pairwise classification task in which a classifier is trained to predict the ranking order of data pairs.</p>
+
+<center>
+	<img src="/images/ranking.png" />
+	Figure 1. System workflow and architecture
+</center>
+
+<p>The proposed architecture primarily consists of six components comprising semantic knowledge base, geocoding service, search index, feature extractor, learning algorithm, and ranking model respectively (Figure 1). When a user submits a query, it is then converted into a semantic query and a geographical bounding box by the semantic knowledge base and geocoding service. The search index would then return the top K results for the semantic query combined with the bounding box. After that, feature extractor would extract the ranking features for each of the search results, including the semantic click score. Once all the features are prepared, the top K results would then be put into a pre-trained ranking model, which would finally re-rank the top K retrieval. As the index in this architecture can be any Lucene-based software, it enables the loosely coupled software structure of a data portal and avoids the cost of replacing the existing system.</p>
+
+<p>Reference:</p>
+<ul>
+  <li>
+    <p>Ghose, Anindya, Panagiotis G Ipeirotis, and Beibei Li. 2012. “Designing ranking systems for hotels on travel search engines by mining user-generated and crowdsourced content.”  Marketing Science 31 (3):493-520.</p>
+  </li>
+  <li>
+    <p>Joachims, Thorsten. 2002. Optimizing search engines using clickthrough data. Paper presented at the Proceedings of the eighth ACM SIGKDD international conference on Knowledge discovery and data mining.</p>
+  </li>
+</ul>
+
+
+<div>
+
+</div>
+
+<div>
+
+<b>Next:</b> <a href="/weekly/update/2018/04/23/recommendation-algorithms.html">An introduction to MUDROD recommendation algorithm</a>
+
+</div>
+
+      <!-- footer -->
+      <nav class="navbar navbar-default">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="">SDAP</a>
+        </div>
+        <div class="navbar-text pull-right">&copy; 2017 The Apache Software Foundation. Licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.<br/>
+        Apache SDAP, SDAP, Apache, the Apache feather logo, and the Apache SDAP project logo are trademarks of The Apache Software Foundation.</div>
+        <div class="navbar-text pull-right">Apache SDAP is an effort undergoing <a href="https://incubator.apache.org/">Incubation</a> at The Apache Software Foundation (ASF), sponsored by the Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.</div>
+      </nav>
+
+      <script src="js/jquery.min.js"></script>
+      <script src="js/bootstrap.min.js"></script>
+    </div>
+  </body>
+</html>
+
